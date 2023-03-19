@@ -3,7 +3,9 @@
 #include <cstddef>
 #include <string>
 #include <utility>
-
+#include <algorithm>
+#include <iostream>
+#include <iterator>
 
 template <typename Type>
 class SingleLinkedList {
@@ -141,14 +143,15 @@ public:
 
     SingleLinkedList(std::initializer_list<Type> values) {
         // Реализуйте конструктор самостоятельно
-        Assign(values);
+        //Assign(values);
+        Assign(values.begin(), values.end());
     }
 
     SingleLinkedList(const SingleLinkedList& other) {
         // Реализуйте конструктор самостоятельно
         assert(size_ == 0 && head_.next_node == nullptr);
-
-        Assign(other);
+        //Assign(other);
+        Assign(other.begin(), other.end());
     }
 
     ~SingleLinkedList() {
@@ -302,21 +305,44 @@ private:
     Node head_;
     size_t size_ = 0;
 
+    /*
     template<typename T>
-    void Assign(T& elem) {
-        SingleLinkedList elem_copy;
-        SingleLinkedList tmp_reverse;
+   void Assign(T& elem) {
+       SingleLinkedList elem_copy;
+       SingleLinkedList tmp_reverse;
 
-        // первый цикл вставляет элементы в обратном порядке
-        for (auto it = elem.begin(); it != elem.end(); ++it) {
-            tmp_reverse.PushFront(*it);
-        }
-        // второй цикл вставляет элементы в нужном для обмена порядке
-        for (auto it = tmp_reverse.begin(); it != tmp_reverse.end(); ++it) {
-            elem_copy.PushFront(*it);
+       // первый цикл вставляет элементы в обратном порядке
+       for (auto it = elem.begin(); it != elem.end(); ++it) {
+           tmp_reverse.PushFront(*it);
+       }
+       // второй цикл вставляет элементы в нужном для обмена порядке
+       for (auto it = tmp_reverse.begin(); it != tmp_reverse.end(); ++it) {
+           elem_copy.PushFront(*it);
+       }
+           swap(elem_copy);
+   }
+     
+    Node* FindNodeAfterLast() const {
+        auto curr_node = &head_;
+        while (curr_node->next_node)
+            curr_node = curr_node->next_node;
+
+        return curr_node->next_node;
+    }
+    */
+    template <typename InputIterator>
+    void Assign(InputIterator begin, InputIterator end) {
+        SingleLinkedList<Type> temp;
+        auto temp_node = &temp.head_;
+
+        for (auto iterator = begin; iterator != end; ++iterator) {
+            temp_node->next_node = new Node(*iterator, nullptr);
+            temp_node = temp_node->next_node;
         }
 
-        swap(elem_copy);
+        temp.size_ = std::distance(begin, end);
+
+        swap(temp);
     }
 };
 
